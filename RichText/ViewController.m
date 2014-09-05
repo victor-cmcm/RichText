@@ -33,7 +33,7 @@
     _info.gradientEndColor = [UIColor redColor];
     
     // border
-    _info.borderWidth = 0;
+    _info.borderWidth = 10;
     _info.borderColor = [UIColor greenColor];
     _info.borderJoin = kCGLineJoinMiter;
     
@@ -54,7 +54,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     [self setupTextInfo];
     
-    UIView* v = _myTextView.subviews[0];
+    UIView* v = _myTextView.subviews[0]; // ios 6 -2
     v1 = [[RichTextView alloc] initWithFrame:v.bounds];
     v1.backgroundColor = [UIColor clearColor];
     v1.userInteractionEnabled = NO;
@@ -81,12 +81,22 @@
   @{ NSFontAttributeName            : _info.textFont,
      NSParagraphStyleAttributeName : paragraphStyle,
      NSKernAttributeName: @(_info.characterSpacing),
-     NSForegroundColorAttributeName:[UIColor colorWithWhite:0 alpha:0.3]
+     NSForegroundColorAttributeName:[UIColor clearColor]
      };
     
-    _myTextView.attributedText = [[NSAttributedString alloc] initWithString:@"Hello" attributes:textAttributes];
+    _myTextView.attributedText = [[NSAttributedString alloc] initWithString:@"Hello123321gg" attributes:textAttributes];
     
-    v1.string = [[NSAttributedString alloc] initWithString:@"Hello" attributes:textAttributes];
+    v1.string = [[NSAttributedString alloc] initWithString:@"Hello123321gg" attributes:textAttributes];
+    
+    
+    UITextRange *startTextRange = [_myTextView characterRangeAtPoint:CGPointMake(10, 25.3599987 + 10)];
+    CGRect caretRect = [_myTextView caretRectForPosition:startTextRange.end];
+    CGFloat topMargin = CGRectGetMinY(caretRect);
+    CGFloat lineHeight = CGRectGetHeight(caretRect);
+    
+//    caretRect = [_myTextView caretRectForPosition:_myTextView.selectedTextRange.end];
+    CGFloat caretTop = CGRectGetMinY(caretRect);
+    NSInteger lineIndex = (caretTop - topMargin) / lineHeight;
 }
 
 - (void)didReceiveMemoryWarning

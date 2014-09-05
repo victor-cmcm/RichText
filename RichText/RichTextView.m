@@ -26,6 +26,8 @@
 
 - (void)drawRect:(CGRect)rect
 {
+    [super drawRect:rect];
+    
     NSLog(@"View rect===>:%@",NSStringFromCGRect(rect));
     
     CGRect drawRect = UIEdgeInsetsInsetRect(rect, UIEdgeInsetsMake(8, 5, 8, 5));
@@ -39,18 +41,21 @@
      *===========> 画边框和阴影
      */
     CGContextRef context = UIGraphicsGetCurrentContext();
-//    CGContextSaveGState(context);
-//    CGContextSetLineJoin(context, _info.borderJoin);
-//    CGContextSetLineWidth(context, _info.borderWidth);
-//    
-//    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
-//    CGContextSetStrokeColorWithColor(context, _info.borderColor.CGColor);
-//    CGContextSetShadowWithColor(context, _info.shadowSize, _info.shadowBlur, _info.shadowColor.CGColor);
-//
-//    [s drawInRect:drawRect withAttributes:textAttributes];
-//    CGContextRestoreGState(context);
+    CGContextSaveGState(context);
+    CGContextSetLineJoin(context, _info.borderJoin);
+    CGContextSetLineWidth(context, _info.borderWidth);
     
-//    CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
+    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+    CGContextSetStrokeColorWithColor(context, _info.borderColor.CGColor);
+    CGContextSetShadowWithColor(context, _info.shadowSize, _info.shadowBlur, _info.shadowColor.CGColor);
+
+    
+    NSAttributedString* as = [[NSAttributedString alloc] initWithString:s attributes:textAttributes];
+    [as drawInRect:drawRect];
+//    [s drawInRect:drawRect withAttributes:textAttributes];
+    CGContextRestoreGState(context);
+    
+    CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
     
     //**
     // get line ========>
@@ -61,9 +66,7 @@
     
     CGRect drawRect2 = drawRect;
     drawRect2.size.height += 1000;
-//    CGMutablePathRef path = CGPathCreateMutable();
     CGPathRef path = CGPathCreateWithRect(drawRect2, NULL);
-//    CGPathAddRect(path, NULL, drawRect2);
     
     CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)strstr);
     
@@ -130,14 +133,15 @@
         
         NSLog(@"ascent:%f,decent:%f,leading:%f",ascent,descent,leading);
         
+        totalLeading += (lineRect.size.height - _info.textFont.lineHeight) + leading;
         lineRect.origin.x = origins[i].x + drawRect2.origin.x ;
-        lineRect.origin.y =  origins[i].y - drawRect2.origin.y ;
+        lineRect.origin.y =  origins[i].y - drawRect2.origin.y + totalLeading ;
         
         //                lineRect.size.height = lineRect1.size.height;
         
-        totalLeading += leading;
         
-        NSLog(@"rect%d:%@",i,NSStringFromCGRect(lineRect));
+        
+        NSLog(@"rect%d:%@ leading:%f",i,NSStringFromCGRect(lineRect),totalLeading);
         
 //        CGRect r1 = CGRectMake(lineRect.origin.x,lineRect.origin.y,lineRect.size.width,lineRect.size.height / 2);
 //        CGRect r2 = CGRectMake(lineRect.origin.x,lineRect.origin.y + lineRect.size.height / 2,lineRect.size.width,lineRect.size.height / 2);
@@ -152,6 +156,7 @@
     CGContextRestoreGState(context);
     
     return;
+    
     //**
     // ========> mask
     //**
@@ -165,7 +170,7 @@
     UIGraphicsEndImageContext();
 
     CGContextSaveGState(context);
-    CGContextTranslateCTM(context, 0, self.bounds.size.height);
+    CGContextTranslateCTM(context, 0, drawRect2.size.height);
     CGContextScaleCTM(context, 1.0, -1.0);
 //    CGContextClipToMask(context, self.bounds, alphaMask);
 
@@ -241,9 +246,9 @@
             UIColor *color1 = [UIColor colorWithRed:0 green:0 blue:1 alpha:0.3];
             UIColor *color2 = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.3];
         
-            CGContextSaveGState(context);
-            CGContextTranslateCTM(context, 0, self.bounds.size.height);
-            CGContextScaleCTM(context, 1.0, -1.0);
+//            CGContextSaveGState(context);
+//            CGContextTranslateCTM(context, 0, self.bounds.size.height);
+//            CGContextScaleCTM(context, 1.0, -1.0);
         
 //            CGContextTranslateCTM(context, -rect.origin.x, -rect.origin.y);
         
@@ -279,8 +284,8 @@
                 
                 NSLog(@"ascent:%f,decent:%f,leading:%f",ascent,descent,leading);
 
-                lineRect.origin.x = origins[i].x;
-                lineRect.origin.y = rect.size.height - origins[i].y - totalLeading ;
+                lineRect.origin.x = origins[i].x + drawRect2.origin.x;
+                lineRect.origin.y = origins[i].y - drawRect2.origin.y;
                 
 //                lineRect.size.height = lineRect1.size.height;
                 
@@ -296,7 +301,7 @@
                 CGContextSetFillColorWithColor(context, color2.CGColor);
                 CGContextFillRect(context, r2);
                 }
-                CGContextRestoreGState(context);
+//                CGContextRestoreGState(context);
             }
             break;
         
