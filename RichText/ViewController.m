@@ -25,7 +25,7 @@
 {
     _info = [[TextInfo alloc] init];
     
-    _info.textFont = [UIFont systemFontOfSize:40];
+    _info.textFont = [UIFont systemFontOfSize:30];
     
     // 颜色/colors
     _info.colorStyle = ColorStyleTwoEach;
@@ -71,24 +71,24 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineHeightMultiple = _info.lineSpacing;
     paragraphStyle.maximumLineHeight = _info.lineSpacing;
-    paragraphStyle.minimumLineHeight = _info.lineSpacing;
+//    paragraphStyle.minimumLineHeight = _info.lineSpacing;
+//    paragraphStyle.paragraphSpacingBefore = _info.lineSpacing;
+//    paragraphStyle.paragraphSpacing = _info.lineSpacing;
+    
     
     
     NSDictionary * textAttributes =
   @{ NSFontAttributeName            : _info.textFont,
      NSParagraphStyleAttributeName : paragraphStyle,
      NSKernAttributeName: @(_info.characterSpacing),
+//     NSStrokeWidthAttributeName: [NSNumber numberWithFloat:-5.0],
+//     NSStrokeColorAttributeName:[UIColor yellowColor],
      NSForegroundColorAttributeName:[UIColor blackColor]
      };
     
     _myTextView.attributedText = [[NSAttributedString alloc] initWithString:@"Hello" attributes:textAttributes];
     
     v1.string = [[NSAttributedString alloc] initWithString:@"Hello" attributes:textAttributes];
-    
-
-//    UITextPosition* position = [_myTextView positionWithinRange:0 atCharacterOffset:1];
-//    CGRect rect = [_myTextView caretRectForPosition:position];
-//    _myTextView.font.lineHeight
 }
 
 - (void)didReceiveMemoryWarning
@@ -108,50 +108,5 @@
     v1.string = textView.attributedText;
 }
 
-
--(void)pinchEvent:(UIPinchGestureRecognizer*)pg
-{
-    switch (pg.state) {
-        case UIGestureRecognizerStateChanged:
-            _myTextView.transform = CGAffineTransformMakeScale(pg.scale, pg.scale);
-            break;
-        case UIGestureRecognizerStateEnded:{
-            CGRect rect = _myTextView.frame;
-            CGAffineTransform transform = _myTextView.transform;
-            
-            _myTextView.transform = CGAffineTransformIdentity;
-            _myTextView.frame = rect;
-            
-            
-            _info.textFont = [UIFont systemFontOfSize:_info.textFont.pointSize * pg.scale];
-            _info.characterSpacing *= pg.scale;
-            _info.lineSpacing *= pg.scale;
-            
-            
-            NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-            paragraphStyle.lineHeightMultiple = _info.lineSpacing;
-            paragraphStyle.maximumLineHeight = _info.lineSpacing;
-            
-            
-            
-            NSDictionary * textAttributes =
-            @{ NSFontAttributeName            : _info.textFont,
-               NSParagraphStyleAttributeName : paragraphStyle,
-               NSKernAttributeName: @(_info.characterSpacing),
-               NSForegroundColorAttributeName:[UIColor clearColor]
-               };
-            
-            NSString* s = _myTextView.attributedText.string;
-            _myTextView.attributedText = [[NSAttributedString alloc] initWithString:s attributes:textAttributes];
-            
-            v1.string = [[NSAttributedString alloc] initWithString:s attributes:textAttributes];
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-}
 
 @end

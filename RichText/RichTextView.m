@@ -56,7 +56,7 @@
     // get line ========>
     //**
     // Create the framesetter with the attributed string.
-    CGRect drawRect2 = CGRectMake(0, 0, drawRect.size.width, drawRect.size.height + 80);
+    CGRect drawRect2 = CGRectMake(0, 0, drawRect.size.width, drawRect.size.height + 40);
 //    CGMutablePathRef path = CGPathCreateMutable();
     CGPathRef path = CGPathCreateWithRect(drawRect2, NULL);
 //    CGPathAddRect(path, NULL, drawRect2);
