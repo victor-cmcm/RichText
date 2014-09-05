@@ -39,33 +39,36 @@
      *===========> 画边框和阴影
      */
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    CGContextSetLineJoin(context, _info.borderJoin);
-    CGContextSetLineWidth(context, _info.borderWidth);
+//    CGContextSaveGState(context);
+//    CGContextSetLineJoin(context, _info.borderJoin);
+//    CGContextSetLineWidth(context, _info.borderWidth);
+//    
+//    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+//    CGContextSetStrokeColorWithColor(context, _info.borderColor.CGColor);
+//    CGContextSetShadowWithColor(context, _info.shadowSize, _info.shadowBlur, _info.shadowColor.CGColor);
+//
+//    [s drawInRect:drawRect withAttributes:textAttributes];
+//    CGContextRestoreGState(context);
     
-    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
-    CGContextSetStrokeColorWithColor(context, _info.borderColor.CGColor);
-    CGContextSetShadowWithColor(context, _info.shadowSize, _info.shadowBlur, _info.shadowColor.CGColor);
-    
-    [s drawInRect:drawRect withAttributes:textAttributes];
-    CGContextRestoreGState(context);
-    
-    
+//    CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
     
     //**
     // get line ========>
     //**
     // Create the framesetter with the attributed string.
-    CGRect drawRect2 = CGRectMake(0, 0, drawRect.size.width, drawRect.size.height + 40);
+    NSMutableAttributedString* strstr = [[NSMutableAttributedString alloc] initWithAttributedString:_string];
+    [strstr addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, _string.string.length)];
+    
+    CGRect drawRect2 = drawRect;
+    drawRect2.size.height += 1000;
 //    CGMutablePathRef path = CGPathCreateMutable();
     CGPathRef path = CGPathCreateWithRect(drawRect2, NULL);
 //    CGPathAddRect(path, NULL, drawRect2);
     
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)_string);
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)strstr);
     
     // Create a frame.
     CTFrameRef frame = CTFramesetterCreateFrame(framesetter,CFRangeMake(0, 0), path, NULL);
-
     
     
     // Draw the specified frame in the given context.
@@ -83,13 +86,72 @@
         NSLog(@"origin%ld:%@",i,NSStringFromCGPoint(origins[i]));
     }
     
-    for (CFIndex i = 0; i < linesCount; i++) {
-        CFRange range = CTLineGetStringRange(CFArrayGetValueAtIndex(lines, i));
-        NSString* s = [_string.string substringWithRange:NSMakeRange(range.location, range.length)];
-        NSLog(@"string%ld:%@",i,s);
-    }
+//    for (CFIndex i = 0; i < linesCount; i++) {
+//        CFRange range = CTLineGetStringRange(CFArrayGetValueAtIndex(lines, i));
+//        NSString* s = [_string.string substringWithRange:NSMakeRange(range.location, range.length)];
+//        NSLog(@"string%ld:%@",i,s);
+//    }
 
     
+    
+    CGContextSaveGState(context);
+    CGContextTranslateCTM(context, 0, drawRect2.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+    
+    CGFloat totalLeading = 0;
+    for (int i = 0; i< linesCount; i++) {
+        CTLineRef line = CFArrayGetValueAtIndex(lines, i);
+        
+        CGRect lineRect1 = CTLineGetBoundsWithOptions(line,kCTLineBoundsUseOpticalBounds);
+        //                CTFontRef
+        
+        CFArrayRef runs = CTLineGetGlyphRuns(line);
+        int count = CFArrayGetCount(runs);
+        for (int i = 0; i<count; i++) {
+            CTRunRef run = CFArrayGetValueAtIndex(runs, i);
+            CGFloat ascent, descent, leading ;
+            CGFloat width = CTRunGetTypographicBounds(run, CFRangeMake(0, 0), &ascent, &descent, &leading);
+            
+            NSLog(@"RUN==>ascent:%f,decent:%f,leading:%f",ascent,descent,leading);
+        }
+        
+        
+        //                NSLog(@"rect%d:%@",i,NSStringFromCGRect(lineRect1));
+        
+        
+        
+        
+        CGFloat ascent, descent, leading ;
+        CGFloat width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading) ;
+        CGRect lineRect = CGRectMake(0, 0, width, ascent+descent+leading) ;
+        
+        lineRect.origin = origins[i];
+        
+        
+        NSLog(@"ascent:%f,decent:%f,leading:%f",ascent,descent,leading);
+        
+        lineRect.origin.x = origins[i].x + drawRect2.origin.x ;
+        lineRect.origin.y =  origins[i].y - drawRect2.origin.y ;
+        
+        //                lineRect.size.height = lineRect1.size.height;
+        
+        totalLeading += leading;
+        
+        NSLog(@"rect%d:%@",i,NSStringFromCGRect(lineRect));
+        
+//        CGRect r1 = CGRectMake(lineRect.origin.x,lineRect.origin.y,lineRect.size.width,lineRect.size.height / 2);
+//        CGRect r2 = CGRectMake(lineRect.origin.x,lineRect.origin.y + lineRect.size.height / 2,lineRect.size.width,lineRect.size.height / 2);
+//        
+//        CGContextSetFillColorWithColor(context, [UIColor grayColor].CGColor);
+//        CGContextFillRect(context, r1);
+//        CGContextSetFillColorWithColor(context, [UIColor blueColor].CGColor);
+//        CGContextFillRect(context, r2);
+        CGContextSetTextPosition(context, lineRect.origin.x, lineRect.origin.y);
+        CTLineDraw(line, context);
+    }
+    CGContextRestoreGState(context);
+    
+    return;
     //**
     // ========> mask
     //**

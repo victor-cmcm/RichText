@@ -25,7 +25,7 @@
 {
     _info = [[TextInfo alloc] init];
     
-    _info.textFont = [UIFont systemFontOfSize:30];
+    _info.textFont = [UIFont systemFontOfSize:20.0f];
     
     // 颜色/colors
     _info.colorStyle = ColorStyleTwoEach;
@@ -45,7 +45,7 @@
     // alignment
     _info.alignment = NSTextAlignmentLeft;
     _info.characterSpacing = 40.0f;
-    _info.lineSpacing = 40.0f;
+    _info.lineSpacing = 0;
 }
 
 - (void)viewDidLoad
@@ -81,9 +81,7 @@
   @{ NSFontAttributeName            : _info.textFont,
      NSParagraphStyleAttributeName : paragraphStyle,
      NSKernAttributeName: @(_info.characterSpacing),
-//     NSStrokeWidthAttributeName: [NSNumber numberWithFloat:-5.0],
-//     NSStrokeColorAttributeName:[UIColor yellowColor],
-     NSForegroundColorAttributeName:[UIColor blackColor]
+     NSForegroundColorAttributeName:[UIColor colorWithWhite:0 alpha:0.3]
      };
     
     _myTextView.attributedText = [[NSAttributedString alloc] initWithString:@"Hello" attributes:textAttributes];
