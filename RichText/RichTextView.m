@@ -4,16 +4,22 @@
 //
 //  Created by v2m on 14-9-3.
 //  Copyright (c) 2014年 v2m. All rights reserved.
-//
+// 新思路，使用lineheight或者linespace取整
 
 #import "RichTextView.h"
 #import <CoreText/CoreText.h>
 
 @implementation RichTextView
 
-- (void)setString:(NSAttributedString *)string
+-(void)setText:(NSString *)text
 {
-    _string = string;
+    _text = text;
+    [self setNeedsDisplay];
+}
+
+- (void)setAttributeInfo:(NSDictionary *)attributeInfo
+{
+    _attributeInfo = attributeInfo;
     [self setNeedsDisplay];
 }
 
@@ -28,16 +34,19 @@
 {
     [super drawRect:rect];
     
+    if (_text.length <= 0) {
+        return;
+    }
+    
     NSLog(@"View rect===>:%@",NSStringFromCGRect(rect));
     
     CGRect drawRect = UIEdgeInsetsInsetRect(rect, UIEdgeInsetsMake(8, 5, 8, 5));
     
-    NSString* s = _string.string;
-    NSRange range = NSMakeRange(0, _string.length);
-    NSMutableDictionary* textAttributes = [NSMutableDictionary dictionaryWithDictionary:[_string attributesAtIndex:0 effectiveRange:&range]];
+    NSRange range = NSMakeRange(0, _text.length);
+    NSMutableDictionary* textAttributes = [NSMutableDictionary dictionaryWithDictionary:_attributeInfo];
     textAttributes[NSForegroundColorAttributeName] = _info.borderColor;
     
-    /*
+    /*33
      *===========> 画边框和阴影
      */
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -50,7 +59,7 @@
 //    CGContextSetShadowWithColor(context, _info.shadowSize, _info.shadowBlur, _info.shadowColor.CGColor);
 
     
-    NSAttributedString* as = [[NSAttributedString alloc] initWithString:s attributes:textAttributes];
+    NSAttributedString* as = [[NSAttributedString alloc] initWithString:_text attributes:textAttributes];
     [as drawInRect:drawRect];
 //    [s drawInRect:drawRect withAttributes:textAttributes];
     CGContextRestoreGState(context);
@@ -61,8 +70,8 @@
     // get line ========>
     //**
     // Create the framesetter with the attributed string.
-    NSMutableAttributedString* strstr = [[NSMutableAttributedString alloc] initWithAttributedString:_string];
-    [strstr addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, _string.string.length)];
+    NSMutableAttributedString* strstr = [[NSMutableAttributedString alloc] initWithString:_text attributes:_attributeInfo];
+    [strstr addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(0, _text.length)];
     
     CGRect drawRect2 = drawRect;
     drawRect2.size.height += 1000;
@@ -167,7 +176,7 @@
     CGImageRef alphaMask = NULL;
     UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, 0);
     CGContextRef subContext = UIGraphicsGetCurrentContext();
-    [s drawInRect:drawRect withAttributes:textAttributes];
+    [_text drawInRect:drawRect withAttributes:_attributeInfo];
     alphaMask = CGBitmapContextCreateImage(subContext);
     UIGraphicsEndImageContext();
 

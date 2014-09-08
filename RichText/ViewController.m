@@ -45,7 +45,7 @@
     // alignment
     _info.alignment = NSTextAlignmentLeft;
     _info.characterSpacing = 40.0f;
-    _info.lineSpacing = 50;
+    _info.lineSpacing = 250;
 }
 
 - (void)viewDidLoad
@@ -54,7 +54,8 @@
 	// Do any additional setup after loading the view, typically from a nib.
     [self setupTextInfo];
     
-    UIView* v = _myTextView.subviews[0]; // ios 6 -2
+    
+    UIView* v = _myTextView.subviews[2]; // ios 6 -2
     v1 = [[RichTextView alloc] initWithFrame:v.bounds];
     v1.backgroundColor = [UIColor clearColor];
     v1.userInteractionEnabled = NO;
@@ -71,22 +72,24 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineHeightMultiple = _info.lineSpacing;
     paragraphStyle.maximumLineHeight = _info.lineSpacing;
-//    paragraphStyle.minimumLineHeight = _info.lineSpacing;
+    paragraphStyle.minimumLineHeight = _info.lineSpacing;
 //    paragraphStyle.paragraphSpacingBefore = _info.lineSpacing;
 //    paragraphStyle.paragraphSpacing = _info.lineSpacing;
+//    paragraphStyle.lineSpacing = _info.lineSpacing;
     
     
     
     NSDictionary * textAttributes =
-  @{ NSFontAttributeName            : _info.textFont,
+  @{ NSFontAttributeName            : _info.textFont,//ios 6 分离设置font
      NSParagraphStyleAttributeName : paragraphStyle,
      NSKernAttributeName: @(_info.characterSpacing),
-     NSForegroundColorAttributeName:[UIColor clearColor]
+     NSForegroundColorAttributeName:[UIColor blackColor]
      };
     
     _myTextView.attributedText = [[NSAttributedString alloc] initWithString:@"Hello123321gg" attributes:textAttributes];
     
-    v1.string = [[NSAttributedString alloc] initWithString:@"Hello123321gg" attributes:textAttributes];
+    v1.text = @"Hello123321gg";
+    v1.attributeInfo = textAttributes;
     
     
     UITextRange *startTextRange = [_myTextView characterRangeAtPoint:CGPointMake(10, 25.3599987 + 10)];
@@ -111,10 +114,10 @@
     [super viewDidAppear:animated];
 }
 
-- (void)textViewDidChange:(UITextView *)textView
-{
-    v1.string = textView.attributedText;
-}
+//- (void)textViewDidChange:(UITextView *)textView
+//{
+//    v1.text = textView.attributedText.string;
+//}
 
 
 @end

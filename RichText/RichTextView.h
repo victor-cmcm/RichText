@@ -11,7 +11,9 @@
 
 @interface RichTextView : UIView
 
-@property (nonatomic,strong) NSAttributedString* string;
+@property (nonatomic,strong) NSString* text;
+@property (nonatomic,strong) NSDictionary* attributeInfo;
+
 @property (nonatomic,strong) TextInfo* info;
 
 @end
