@@ -42,12 +42,12 @@
      */
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSaveGState(context);
-    CGContextSetLineJoin(context, _info.borderJoin);
-    CGContextSetLineWidth(context, _info.borderWidth);
+//    CGContextSetLineJoin(context, _info.borderJoin);
+//    CGContextSetLineWidth(context, _info.borderWidth);
     
     CGContextSetTextDrawingMode(context, kCGTextFillStroke);
-    CGContextSetStrokeColorWithColor(context, _info.borderColor.CGColor);
-    CGContextSetShadowWithColor(context, _info.shadowSize, _info.shadowBlur, _info.shadowColor.CGColor);
+//    CGContextSetStrokeColorWithColor(context, _info.borderColor.CGColor);
+//    CGContextSetShadowWithColor(context, _info.shadowSize, _info.shadowBlur, _info.shadowColor.CGColor);
 
     
     NSAttributedString* as = [[NSAttributedString alloc] initWithString:s attributes:textAttributes];
@@ -86,6 +86,7 @@
     CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), origins);
     
     for (CFIndex i = 0; i < linesCount; i++) {
+        printf("origin:(%f,%f)",origins[i].x,origins[i].y);
         NSLog(@"origin%ld:%@",i,NSStringFromCGPoint(origins[i]));
     }
     
@@ -98,8 +99,8 @@
     
     
     CGContextSaveGState(context);
-    CGContextTranslateCTM(context, 0, drawRect2.size.height);
-    CGContextScaleCTM(context, 1.0, -1.0);
+//    CGContextTranslateCTM(context, 0, drawRect2.size.height);
+//    CGContextScaleCTM(context, 1.0, -1.0);
     
     CGFloat totalLeading = 0;
     for (int i = 0; i< linesCount; i++) {
@@ -136,6 +137,7 @@
         totalLeading += (lineRect.size.height - _info.textFont.lineHeight) + leading;
         lineRect.origin.x = origins[i].x + drawRect2.origin.x ;
         lineRect.origin.y =  origins[i].y - drawRect2.origin.y + totalLeading ;
+        lineRect.origin.y = _info.lineSpacing * i + drawRect2.origin.y + (_info.lineSpacing - _info.textFont.lineHeight);
         
         //                lineRect.size.height = lineRect1.size.height;
         

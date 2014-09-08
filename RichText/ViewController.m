@@ -45,7 +45,7 @@
     // alignment
     _info.alignment = NSTextAlignmentLeft;
     _info.characterSpacing = 40.0f;
-    _info.lineSpacing = 0;
+    _info.lineSpacing = 50;
 }
 
 - (void)viewDidLoad
